@@ -1,10 +1,23 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTodoItems } from './hooks/useTodoItems'
 import { useTodoList } from '../todo-lists/hooks/useTodoList'
+import { useState } from 'react'
+import { useCreateTodoItem } from './hooks/useCreateTodoItems'
 
 export function TodoItems() {
   const { listId: listIdParam } = useParams()
   const listId = Number(listIdParam)
+  const [description, setDescription] = useState('')
+  const { mutate: createTodoItem, isPending } = useCreateTodoItem()
+
+  function handleCreate(e: React.FormEvent) {
+    e.preventDefault()
+
+    if (!description.trim()) return
+
+    createTodoItem({ listId, description })
+    setDescription('')
+  }
 
   const isValidId = Number.isFinite(listId)
 
@@ -32,6 +45,17 @@ export function TodoItems() {
       </p>
 
       {isLoadingList ? <p>Loading list...</p> : <h1>{title}</h1>}
+
+      <form onSubmit={handleCreate}>
+        <input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="New item"
+        />
+        <button type="submit" disabled={isPending}>
+          Add
+        </button>
+      </form>
 
       {isLoadingItems && <p>Loading items...</p>}
       {error && <p>Error</p>}
