@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
-import { server } from './test/server'
-import { renderWithProviders } from './test/renderWithProviders'
+import { server } from '../../test/server'
+import { renderWithProviders } from '../../test/renderWithProviders'
 import { TodoLists } from './TodoLists'
 
 describe('TodoLists', () => {
