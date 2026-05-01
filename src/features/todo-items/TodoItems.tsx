@@ -4,6 +4,7 @@ import { useTodoList } from '../todo-lists/hooks/useTodoList'
 import { useState } from 'react'
 import { useCreateTodoItem } from './hooks/useCreateTodoItems'
 import { useToggleTodoItem } from './hooks/useToggleTodoItem'
+import { useDeleteTodoItem } from './hooks/useDeleteTodoItem'
 
 export function TodoItems() {
   const { listId: listIdParam } = useParams()
@@ -11,6 +12,7 @@ export function TodoItems() {
   const [description, setDescription] = useState('')
   const { mutate: createTodoItem, isPending } = useCreateTodoItem()
   const { mutate: toggleTodoItem } = useToggleTodoItem()
+  const { mutate: deleteTodoItem, isPending: isDeleting } = useDeleteTodoItem()
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault()
@@ -83,6 +85,12 @@ export function TodoItems() {
               />
               {item.description}
             </label>
+            <button
+              onClick={() => deleteTodoItem({ listId, itemId: item.id! })}
+              disabled={isDeleting}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
