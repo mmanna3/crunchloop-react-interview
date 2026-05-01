@@ -1,9 +1,9 @@
 import { components } from './types'
 import { fetcher, fetcherVoid } from './client'
 
-type TodoList = components['schemas']['TodoList']
-type CreateListDTO = components['schemas']['CreateListDTO']
-type UpdateListDTO = components['schemas']['UpdateListDTO']
+export type TodoList = components['schemas']['TodoList']
+export type CreateListDTO = components['schemas']['CreateListDTO']
+export type UpdateListDTO = components['schemas']['UpdateListDTO']
 
 export const todoListsApi = {
   getAll: () =>

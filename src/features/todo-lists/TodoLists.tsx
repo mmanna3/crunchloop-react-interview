@@ -1,21 +1,48 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTodoLists } from './hooks/useTodoLists'
+import { useCreateTodoList } from './hooks/useCreateTodoList'
 
 export function TodoLists() {
   const { data, isLoading, error } = useTodoLists()
+  const { mutate: createTodoList, isPending } = useCreateTodoList()
+
+  const [title, setTitle] = useState('')
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+
+    if (!title.trim()) return
+
+    createTodoList({ name: title })
+    setTitle('')
+  }
 
   if (isLoading) return <p>Cargando...</p>
-  if (error) return <p>Error: {error.message}</p>
+  if (error) return <p>Error</p>
 
   return (
-    <ul>
-      {data?.map((list) => (
-        <li key={list.id}>
-          <Link to={`/lists/${list.id}`} state={{ name: list.name }}>
-            {list.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <>
+      <form onSubmit={handleSubmit}>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Nueva lista"
+        />
+        <button type="submit" disabled={isPending}>
+          Crear
+        </button>
+      </form>
+
+      <ul>
+        {data?.map((list) => (
+          <li key={list.id}>
+            <Link to={`/lists/${list.id}`}>
+              {list.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }
