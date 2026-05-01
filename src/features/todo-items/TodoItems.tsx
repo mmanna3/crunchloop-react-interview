@@ -1,11 +1,14 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTodoItems } from './hooks/useTodoItems'
 import { useTodoList } from '../todo-lists/hooks/useTodoList'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useCreateTodoItem } from './hooks/useCreateTodoItems'
 import { useToggleTodoItem } from './hooks/useToggleTodoItem'
 import { useDeleteTodoItem } from './hooks/useDeleteTodoItem'
 import { useUpdateTodoItem } from './hooks/useUpdateTodoItem'
+import { useBulkCompleteListener } from './hooks/useBulkCompleteListener'
+import { todoListsApi } from '../../api/todoLists'
 
 export function TodoItems() {
   const { listId: listIdParam } = useParams()
@@ -17,6 +20,14 @@ export function TodoItems() {
   const { mutate: toggleTodoItem } = useToggleTodoItem()
   const { mutate: deleteTodoItem, isPending: isDeleting } = useDeleteTodoItem()
   const { mutate: updateTodoItem, isPending: isUpdating } = useUpdateTodoItem()
+
+  const queryClient = useQueryClient()
+  const { connect, progress } = useBulkCompleteListener()
+
+  async function handleCompleteAll() {
+    const connectionId = await connect()
+    await todoListsApi.completeAllItems(listId, connectionId)
+  }
 
   function startEditing(item: { id: number; description: string }) {
     setEditingId(item.id)
@@ -53,6 +64,16 @@ export function TodoItems() {
     error,
   } = useTodoItems(listId)
 
+  useEffect(() => {
+    if (!progress || progress.completedIds.length === 0) return
+    const completedSet = new Set(progress.completedIds)
+    queryClient.setQueryData(['todoitems', listId], (old: typeof items) =>
+      old?.map((item) =>
+        completedSet.has(item.id!) ? { ...item, isCompleted: true } : item
+      )
+    )
+  }, [progress])
+
   if (!isValidId) {
     return <p>Invalid list</p>
   }
@@ -77,6 +98,16 @@ export function TodoItems() {
           Add
         </button>
       </form>
+
+      {progress && !progress.isFinished ? (
+        <span>
+          Completing... {progress.completed} / {progress.total}
+        </span>
+      ) : (
+        <button onClick={handleCompleteAll}>
+          Complete all items
+        </button>
+      )}
 
       {isLoadingItems && <p>Loading items...</p>}
       {error && <p>Error</p>}

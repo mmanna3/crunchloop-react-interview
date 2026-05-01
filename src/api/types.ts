@@ -305,10 +305,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/todolists/{listId}/complete-all-items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    listId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CompleteAllItemsResponseDTO"];
+                        "application/json": components["schemas"]["CompleteAllItemsResponseDTO"];
+                        "text/json": components["schemas"]["CompleteAllItemsResponseDTO"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CompleteAllItemsResponseDTO: {
+            operationId?: string | null;
+            /** Format: int32 */
+            total?: number;
+        };
         CreateItemDTO: {
             description: string | null;
         };
