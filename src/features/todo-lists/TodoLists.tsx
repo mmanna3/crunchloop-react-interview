@@ -63,10 +63,10 @@ export function TodoLists() {
                   onChange={(e) => setEditingName(e.target.value)}
                 />
                 <button onClick={() => handleUpdate(list.id!)} disabled={isUpdating}>
-                  Guardar
+                  Save
                 </button>
                 <button onClick={() => setEditingId(null)}>
-                  Cancelar
+                  Cancel
                 </button>
               </>
             ) : (
@@ -75,10 +75,10 @@ export function TodoLists() {
                   {list.name}
                 </Link>
                 <button onClick={() => startEditing({ id: list.id!, name: list.name! })}>
-                  Editar
+                  Edit
                 </button>
                 <button onClick={() => deleteTodoList(list.id!)} disabled={isDeleting}>
-                  Eliminar
+                  Delete
                 </button>
               </>
             )}
