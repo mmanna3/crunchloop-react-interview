@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('shows lists returned by the mock of /api/todolists', async ({ page }) => {
+test('shows todo lists on page load', async ({ page }) => {
   const mockedLists = [
     { id: 1, name: 'Shopping list', todoItems: [] },
     { id: 2, name: 'Project tasks', todoItems: [] },
