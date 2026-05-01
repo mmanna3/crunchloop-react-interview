@@ -1,7 +1,7 @@
 import logo from './assets/logo.png'
 import { Route, Routes } from 'react-router-dom'
 import { TodoLists } from './features/todo-lists/TodoLists'
-import { TodoItems } from './TodoItems'
+import { TodoItems } from './features/todo-items/TodoItems'
 
 function App() {
   return (
