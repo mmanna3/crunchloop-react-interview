@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import { todoListsApi } from './api/todoLists'
 
 export function TodoLists() {
@@ -13,7 +14,11 @@ export function TodoLists() {
   return (
     <ul>
       {data?.map((list) => (
-        <li key={list.id}>{list.name}</li>
+        <li key={list.id}>
+          <Link to={`/lists/${list.id}`} state={{ name: list.name }}>
+            {list.name}
+          </Link>
+        </li>
       ))}
     </ul>
   )
