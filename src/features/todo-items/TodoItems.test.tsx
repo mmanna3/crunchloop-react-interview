@@ -1,8 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { server } from './test/server'
-import { renderWithProviders } from './test/renderWithProviders'
+import { server } from '../../test/server'
+import { renderWithProviders } from '../../test/renderWithProviders'
 import { TodoItems } from './TodoItems'
 
 const BASE_URL = 'https://localhost:7027'
@@ -22,15 +22,11 @@ function renderTodoItems(entries: MemoryInitialEntries) {
 
 describe('TodoItems', () => {
   it('renders the list name and items received from the server', async () => {
-    renderTodoItems([
-      { pathname: '/lists/2', state: { name: 'List from navigation' } },
-    ])
+    renderTodoItems(['/lists/2'])
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-        'List from navigation'
-      )
-      expect(screen.getByText(/Item list 2\s*✓/)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('List 2')
+      expect(screen.getByLabelText(/Item list 2/i)).toBeChecked()
     })
   })
 
