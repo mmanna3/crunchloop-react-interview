@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test'
 
-test('muestra las listas devueltas por el mock de /api/todolists', async ({ page }) => {
+test('shows lists returned by the mock of /api/todolists', async ({ page }) => {
   const mockedLists = [
-    { id: 1, name: 'Lista de compras', todoItems: [] },
-    { id: 2, name: 'Tareas del proyecto', todoItems: [] },
+    { id: 1, name: 'Shopping list', todoItems: [] },
+    { id: 2, name: 'Project tasks', todoItems: [] },
   ]
 
   await page.route('**/api/todolists', async (route) => {
@@ -20,6 +20,6 @@ test('muestra las listas devueltas por el mock de /api/todolists', async ({ page
 
   await page.goto('/')
 
-  await expect(page.getByText('Lista de compras')).toBeVisible()
-  await expect(page.getByText('Tareas del proyecto')).toBeVisible()
+  await expect(page.getByText('Shopping list')).toBeVisible()
+  await expect(page.getByText('Project tasks')).toBeVisible()
 })

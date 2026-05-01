@@ -12,8 +12,8 @@ describe('TodoLists', () => {
     renderWithProviders(<TodoLists />)
 
     await waitFor(() => {
-      expect(screen.getByText('Lista 1')).toBeInTheDocument()
-      expect(screen.getByText('Lista 2')).toBeInTheDocument()
+      expect(screen.getByText('List 1')).toBeInTheDocument()
+      expect(screen.getByText('List 2')).toBeInTheDocument()
     })
   })
 
@@ -32,7 +32,7 @@ describe('TodoLists', () => {
   })
 
   it('creating a list sends POST with the given name', async () => {
-    const newListName = 'Lista nueva'
+    const newListName = 'New list'
 
     let requestBody: unknown
     server.use(
@@ -46,11 +46,11 @@ describe('TodoLists', () => {
     renderWithProviders(<TodoLists />)
 
     await waitFor(() => {
-      expect(screen.getByText('Lista 1')).toBeInTheDocument()
+      expect(screen.getByText('List 1')).toBeInTheDocument()
     })
 
-    await user.type(screen.getByPlaceholderText('Nueva lista'), newListName)
-    await user.click(screen.getByRole('button', { name: 'Crear' }))
+    await user.type(screen.getByPlaceholderText('New list'), newListName)
+    await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() => {
       expect(requestBody).toEqual({ name: newListName })
@@ -70,10 +70,10 @@ describe('TodoLists', () => {
     renderWithProviders(<TodoLists />)
 
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: 'Lista 2' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'List 2' })).toBeInTheDocument()
     })
 
-    const listItem = screen.getByRole('link', { name: 'Lista 2' }).closest('li')!
+    const listItem = screen.getByRole('link', { name: 'List 2' }).closest('li')!
     await user.click(within(listItem).getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => {
@@ -86,10 +86,10 @@ describe('TodoLists', () => {
     renderWithProviders(<TodoLists />)
 
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: 'Lista 1' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'List 1' })).toBeInTheDocument()
     })
 
-    const listItem = screen.getByRole('link', { name: 'Lista 1' }).closest('li')!
+    const listItem = screen.getByRole('link', { name: 'List 1' }).closest('li')!
     await user.click(within(listItem).getByRole('button', { name: 'Edit' }))
 
     expect(within(listItem).getByRole('button', { name: 'Save' })).toBeInTheDocument()
@@ -101,10 +101,10 @@ describe('TodoLists', () => {
     renderWithProviders(<TodoLists />)
 
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: 'Lista 1' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'List 1' })).toBeInTheDocument()
     })
 
-    const listItem = screen.getByRole('link', { name: 'Lista 1' }).closest('li')!
+    const listItem = screen.getByRole('link', { name: 'List 1' }).closest('li')!
     await user.click(within(listItem).getByRole('button', { name: 'Edit' }))
 
     await user.click(within(listItem).getByRole('button', { name: 'Cancel' }))
@@ -128,13 +128,13 @@ describe('TodoLists', () => {
     renderWithProviders(<TodoLists />)
 
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: 'Lista 1' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'List 1' })).toBeInTheDocument()
     })
 
-    const listItem = screen.getByRole('link', { name: 'Lista 1' }).closest('li')!
+    const listItem = screen.getByRole('link', { name: 'List 1' }).closest('li')!
     await user.click(within(listItem).getByRole('button', { name: 'Edit' }))
 
-    const newName = 'Lista renombrada'
+    const newName = 'Renamed list'
     const nameInput = within(listItem).getByRole('textbox')
     await user.clear(nameInput)
     await user.type(nameInput, newName)

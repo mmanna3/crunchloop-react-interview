@@ -30,13 +30,13 @@ export function TodoItems() {
   })
 
   if (!Number.isFinite(listId)) {
-    return <p>Lista no válida</p>
+    return <p>Invalid list</p>
   }
 
   return (
     <div>
       <p>
-        <Link to="/">← Volver</Link>
+        <Link to="/">← Back</Link>
       </p>
       <h1>{title}</h1>
       {isLoading && <p>Cargando...</p>}

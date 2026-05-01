@@ -21,20 +21,20 @@ function renderTodoItems(entries: MemoryInitialEntries) {
 }
 
 describe('TodoItems', () => {
-  it('renderiza el nombre de la lista y los ítems recibidos del servidor', async () => {
+  it('renders the list name and items received from the server', async () => {
     renderTodoItems([
-      { pathname: '/lists/2', state: { name: 'Lista desde navegación' } },
+      { pathname: '/lists/2', state: { name: 'List from navigation' } },
     ])
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-        'Lista desde navegación'
+        'List from navigation'
       )
-      expect(screen.getByText(/Item lista 2\s*✓/)).toBeInTheDocument()
+      expect(screen.getByText(/Item list 2\s*✓/)).toBeInTheDocument()
     })
   })
 
-  it('muestra error cuando el servidor falla al cargar los ítems', async () => {
+  it('shows error when the server fails to load the items', async () => {
     server.use(
       http.get(`${BASE_URL}/api/todolists/:listId/items`, () =>
         HttpResponse.json(null, { status: 500 })

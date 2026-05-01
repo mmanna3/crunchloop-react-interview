@@ -46,10 +46,10 @@ export function TodoLists() {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Nueva lista"
+          placeholder="New list"
         />
         <button type="submit" disabled={isPending}>
-          Crear
+          Create
         </button>
       </form>
 
