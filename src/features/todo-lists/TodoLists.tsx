@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTodoLists } from './hooks/useTodoLists'
 import { useCreateTodoList } from './hooks/useCreateTodoList'
+import { useDeleteTodoList } from './hooks/useDeleteTodoList'
 
 export function TodoLists() {
   const { data, isLoading, error } = useTodoLists()
   const { mutate: createTodoList, isPending } = useCreateTodoList()
+  const { mutate: deleteTodoList, isPending: isDeleting } = useDeleteTodoList()
 
   const [title, setTitle] = useState('')
 
@@ -40,6 +42,9 @@ export function TodoLists() {
             <Link to={`/lists/${list.id}`}>
               {list.name}
             </Link>
+            <button onClick={() => deleteTodoList(list.id!)} disabled={isDeleting}>
+              Eliminar
+            </button>
           </li>
         ))}
       </ul>
