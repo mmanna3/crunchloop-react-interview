@@ -3,12 +3,14 @@ import { useTodoItems } from './hooks/useTodoItems'
 import { useTodoList } from '../todo-lists/hooks/useTodoList'
 import { useState } from 'react'
 import { useCreateTodoItem } from './hooks/useCreateTodoItems'
+import { useToggleTodoItem } from './hooks/useToggleTodoItem'
 
 export function TodoItems() {
   const { listId: listIdParam } = useParams()
   const listId = Number(listIdParam)
   const [description, setDescription] = useState('')
   const { mutate: createTodoItem, isPending } = useCreateTodoItem()
+  const { mutate: toggleTodoItem } = useToggleTodoItem()
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault()
@@ -67,8 +69,20 @@ export function TodoItems() {
       <ul>
         {items?.map((item) => (
           <li key={item.id}>
-            {item.description}
-            {item.isCompleted ? ' ✓' : ''}
+            <label>
+              <input
+                type="checkbox"
+                checked={item.isCompleted}
+                onChange={(e) =>
+                  toggleTodoItem({
+                    listId,
+                    itemId: item.id!,
+                    isCompleted: e.target.checked,
+                  })
+                }
+              />
+              {item.description}
+            </label>
           </li>
         ))}
       </ul>
