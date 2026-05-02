@@ -1,33 +1,23 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTodoItems } from './hooks/useTodoItems'
 import { useTodoList } from '../todo-lists/hooks/useTodoList'
-import { useEffect, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import { useCreateTodoItem } from './hooks/useCreateTodoItems'
+import { useState } from 'react'
 import { useToggleTodoItem } from './hooks/useToggleTodoItem'
 import { useDeleteTodoItem } from './hooks/useDeleteTodoItem'
 import { useUpdateTodoItem } from './hooks/useUpdateTodoItem'
-import { useBulkCompleteListener } from './hooks/useBulkCompleteListener'
-import { todoListsApi } from '../../api/todoLists'
+import { BulkCompleteToolbar } from './BulkCompleteToolbar'
+import { AddTodoItemForm } from './AddTodoItemForm'
+import { TodoItemDisplay } from './TodoItemDisplay'
+import { TodoItemInlineEditor } from './TodoItemInlineEditor'
 
 export function TodoItems() {
   const { listId: listIdParam } = useParams()
   const listId = Number(listIdParam)
-  const [description, setDescription] = useState('')
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editingDescription, setEditingDescription] = useState('')
-  const { mutate: createTodoItem, isPending } = useCreateTodoItem()
   const { mutate: toggleTodoItem } = useToggleTodoItem()
   const { mutate: deleteTodoItem, isPending: isDeleting } = useDeleteTodoItem()
   const { mutate: updateTodoItem, isPending: isUpdating } = useUpdateTodoItem()
-
-  const queryClient = useQueryClient()
-  const { connect, progress } = useBulkCompleteListener()
-
-  async function handleCompleteAll() {
-    const connectionId = await connect()
-    await todoListsApi.completeAllItems(listId, connectionId)
-  }
 
   function startEditing(item: { id: number; description: string }) {
     setEditingId(item.id)
@@ -40,15 +30,6 @@ export function TodoItems() {
     updateTodoItem({ listId, itemId, description: editingDescription })
     setEditingId(null)
     setEditingDescription('')
-  }
-
-  function handleCreate(e: React.FormEvent) {
-    e.preventDefault()
-
-    if (!description.trim()) return
-
-    createTodoItem({ listId, description })
-    setDescription('')
   }
 
   const isValidId = Number.isFinite(listId)
@@ -64,16 +45,6 @@ export function TodoItems() {
     error,
   } = useTodoItems(listId)
 
-  useEffect(() => {
-    if (!progress || progress.completedIds.length === 0) return
-    const completedSet = new Set(progress.completedIds)
-    queryClient.setQueryData(['todoitems', listId], (old: typeof items) =>
-      old?.map((item) =>
-        completedSet.has(item.id!) ? { ...item, isCompleted: true } : item
-      )
-    )
-  }, [progress])
-
   if (!isValidId) {
     return <p>Invalid list</p>
   }
@@ -88,26 +59,9 @@ export function TodoItems() {
 
       {isLoadingList ? <p>Loading list...</p> : <h1>{title}</h1>}
 
-      <form onSubmit={handleCreate}>
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="New item"
-        />
-        <button type="submit" disabled={isPending}>
-          Add
-        </button>
-      </form>
+      <AddTodoItemForm listId={listId} />
 
-      {progress && !progress.isFinished ? (
-        <span>
-          Completing... {progress.completed} / {progress.total}
-        </span>
-      ) : (
-        <button onClick={handleCompleteAll}>
-          Complete all items
-        </button>
-      )}
+      <BulkCompleteToolbar listId={listId} />
 
       {isLoadingItems && <p>Loading items...</p>}
       {error && <p>Error</p>}
@@ -120,46 +74,23 @@ export function TodoItems() {
         {items?.map((item) => (
           <li key={item.id}>
             {editingId === item.id ? (
-              <>
-                <input
-                  value={editingDescription}
-                  onChange={(e) => setEditingDescription(e.target.value)}
-                />
-                <button onClick={() => handleUpdate(item.id!)} disabled={isUpdating}>
-                  Save
-                </button>
-                <button onClick={() => setEditingId(null)}>Cancel</button>
-              </>
+              <TodoItemInlineEditor
+                description={editingDescription}
+                onDescriptionChange={setEditingDescription}
+                onSave={() => handleUpdate(item.id!)}
+                onCancel={() => setEditingId(null)}
+                isSaving={isUpdating}
+              />
             ) : (
-              <>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={item.isCompleted}
-                    onChange={(e) =>
-                      toggleTodoItem({
-                        listId,
-                        itemId: item.id!,
-                        isCompleted: e.target.checked,
-                      })
-                    }
-                  />
-                  {item.description}
-                </label>
-                <button
-                  onClick={() =>
-                    startEditing({ id: item.id!, description: item.description! })
-                  }
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => deleteTodoItem({ listId, itemId: item.id! })}
-                  disabled={isDeleting}
-                >
-                  Delete
-                </button>
-              </>
+              <TodoItemDisplay
+                item={item}
+                onToggle={(itemId, isCompleted) =>
+                  toggleTodoItem({ listId, itemId, isCompleted })
+                }
+                onEdit={startEditing}
+                onDelete={(itemId) => deleteTodoItem({ listId, itemId })}
+                isDeleting={isDeleting}
+              />
             )}
           </li>
         ))}
