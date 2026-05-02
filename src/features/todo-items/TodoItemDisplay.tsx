@@ -21,25 +21,30 @@ export function TodoItemDisplay({
   const description = item.description!
 
   return (
-    <>
-      <label>
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <label className="flex min-w-0 cursor-pointer items-start gap-3 sm:flex-1">
         <input
           type="checkbox"
           checked={item.isCompleted}
           onChange={(e) => onToggle(id, e.target.checked)}
+          className="mt-1 size-[1.125rem] shrink-0 rounded-md border-zinc-300 text-accent focus:ring-orange-500/30"
         />
-        {description}
+        <span
+          className={`text-[15px] leading-snug text-zinc-900 ${
+            item.isCompleted ? 'text-zinc-400 line-through' : ''
+          }`}
+        >
+          {description}
+        </span>
       </label>
-      <button type="button" onClick={() => onEdit({ id, description })}>
-        Edit
-      </button>
-      <button
-        type="button"
-        onClick={() => onDelete(id)}
-        disabled={isDeleting}
-      >
-        Delete
-      </button>
-    </>
+      <div className="flex shrink-0 flex-wrap gap-2 sm:pl-2">
+        <button type="button" className="btn-secondary" onClick={() => onEdit({ id, description })}>
+          Edit
+        </button>
+        <button type="button" className="btn-danger" onClick={() => onDelete(id)} disabled={isDeleting}>
+          Delete
+        </button>
+      </div>
+    </div>
   )
 }

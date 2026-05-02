@@ -13,13 +13,24 @@ export function AddTodoListForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="New list"
-      />
-      <button type="submit" disabled={isPending}>
+    <form
+      onSubmit={handleSubmit}
+      className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-end sm:gap-4"
+    >
+      <div className="min-w-0 flex-1">
+        <label htmlFor="new-list-name" className="mb-2 block text-xs font-medium text-zinc-500">
+          New list
+        </label>
+        <input
+          id="new-list-name"
+          className="field"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="New list"
+          autoComplete="off"
+        />
+      </div>
+      <button type="submit" className="btn-primary shrink-0" disabled={isPending}>
         Create
       </button>
     </form>

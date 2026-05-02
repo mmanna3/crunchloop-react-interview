@@ -12,11 +12,22 @@ export function TodoLists() {
     setEditingId(list.id!)
   }
 
-  if (isLoading) return <p>Cargando...</p>
-  if (error) return <p>Error</p>
+  if (isLoading) {
+    return (
+      <p className="text-center text-sm text-zinc-500">Cargando...</p>
+    )
+  }
+
+  if (error) {
+    return (
+      <p className="rounded-2xl border border-red-200/80 bg-red-50 px-4 py-3 text-center text-sm text-red-800">
+        Error al cargar las listas.
+      </p>
+    )
+  }
 
   return (
-    <>
+    <div className="space-y-8">
       <AddTodoListForm />
       <TodoListDisplay
         lists={data ?? []}
@@ -25,6 +36,6 @@ export function TodoLists() {
         onCancelEdit={() => setEditingId(null)}
         onEditSaved={() => setEditingId(null)}
       />
-    </>
+    </div>
   )
 }

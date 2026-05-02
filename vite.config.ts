@@ -1,12 +1,8 @@
-import { configDefaults, defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react-swc'
 
+// Tailwind must run before/alongside React so CSS from ./src/index.css is transformed.
 export default defineConfig({
-  plugins: [react()],
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: './src/test/setup.ts',
-    exclude: [...configDefaults.exclude, '**/e2e/**'],
-  },
+  plugins: [tailwindcss(), react()],
 })

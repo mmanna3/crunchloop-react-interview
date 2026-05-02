@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji';
+  --color-accent: oklch(0.58 0.2 42);
+  --color-accent-hover: oklch(0.52 0.2 42);
+  --color-accent-foreground: oklch(0.99 0 0);
+  --color-accent-soft: oklch(0.97 0.02 42);
+  --color-accent-border: oklch(0.88 0.06 42);
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground shadow-sm transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .btn-secondary {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-full border border-zinc-200/90 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .btn-danger {
+    @apply inline-flex cursor-pointer items-center justify-center rounded-full border border-red-200/90 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/40 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .field {
+    @apply w-full min-w-0 rounded-2xl border border-zinc-200/90 bg-white px-4 py-3 text-sm text-zinc-900 shadow-inner shadow-zinc-900/[0.03] placeholder:text-zinc-400 focus:border-orange-400/80 focus:outline-none focus:ring-2 focus:ring-orange-500/15;
+  }
+
+  .card {
+    @apply rounded-3xl border border-zinc-200/60 bg-white/80 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.04)] backdrop-blur-sm;
+  }
+}

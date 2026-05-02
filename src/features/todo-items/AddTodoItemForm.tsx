@@ -17,13 +17,24 @@ export function AddTodoItemForm({ listId }: AddTodoItemFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="New item"
-      />
-      <button type="submit" disabled={isPending}>
+    <form
+      onSubmit={handleSubmit}
+      className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-end sm:gap-4"
+    >
+      <div className="min-w-0 flex-1">
+        <label htmlFor="new-todo-item" className="mb-2 block text-xs font-medium text-zinc-500">
+          New item
+        </label>
+        <input
+          id="new-todo-item"
+          className="field"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="New item"
+          autoComplete="off"
+        />
+      </div>
+      <button type="submit" className="btn-primary shrink-0" disabled={isPending}>
         Add
       </button>
     </form>

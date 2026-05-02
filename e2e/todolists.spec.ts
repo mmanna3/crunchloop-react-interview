@@ -22,4 +22,9 @@ test('shows todo lists on page load', async ({ page }) => {
 
   await expect(page.getByText('Shopping list')).toBeVisible()
   await expect(page.getByText('Project tasks')).toBeVisible()
+
+  await expect(page.locator('ul a[href="/lists/1"]')).toHaveAttribute(
+    'aria-label',
+    'Shopping list'
+  )
 })

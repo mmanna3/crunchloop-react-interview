@@ -30,14 +30,21 @@ export function TodoListInlineEditor({
   }
 
   return (
-    <>
-      <input value={name} onChange={(e) => setName(e.target.value)} />
-      <button type="button" onClick={handleSave} disabled={isUpdating}>
-        Save
-      </button>
-      <button type="button" onClick={onCancel}>
-        Cancel
-      </button>
-    </>
+    <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+      <input
+        className="field flex-1"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        aria-label="List name"
+      />
+      <div className="flex shrink-0 gap-2">
+        <button type="button" className="btn-primary" onClick={handleSave} disabled={isUpdating}>
+          Save
+        </button>
+        <button type="button" className="btn-secondary" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
   )
 }

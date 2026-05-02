@@ -14,17 +14,21 @@ export function TodoItemInlineEditor({
   isSaving,
 }: TodoItemInlineEditorProps) {
   return (
-    <>
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
       <input
+        className="field flex-1"
         value={description}
         onChange={(e) => onDescriptionChange(e.target.value)}
+        aria-label="Task description"
       />
-      <button type="button" onClick={onSave} disabled={isSaving}>
-        Save
-      </button>
-      <button type="button" onClick={onCancel}>
-        Cancel
-      </button>
-    </>
+      <div className="flex shrink-0 gap-2">
+        <button type="button" className="btn-primary" onClick={onSave} disabled={isSaving}>
+          Save
+        </button>
+        <button type="button" className="btn-secondary" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
   )
 }
