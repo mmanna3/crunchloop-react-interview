@@ -1,13 +1,18 @@
 import { FormEvent, useState } from 'react'
+import { CharacterCount } from '../../components/CharacterCount'
+import { TODO_LIST_NAME_MAX_LENGTH } from '../../constants/textLimits'
 import { useCreateTodoList } from './hooks/useCreateTodoList'
 
 export function AddTodoListForm() {
   const [title, setTitle] = useState('')
   const { mutate: createTodoList, isPending } = useCreateTodoList()
 
+  const canSubmit =
+    title.trim().length > 0 && title.length <= TODO_LIST_NAME_MAX_LENGTH
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (!title.trim()) return
+    if (!canSubmit) return
     createTodoList({ name: title })
     setTitle('')
   }
@@ -29,8 +34,11 @@ export function AddTodoListForm() {
           placeholder="New list"
           autoComplete="off"
         />
+        <div className="mt-1 flex justify-end">
+          <CharacterCount length={title.length} max={TODO_LIST_NAME_MAX_LENGTH} />
+        </div>
       </div>
-      <button type="submit" className="btn-primary shrink-0" disabled={isPending}>
+      <button type="submit" className="btn-primary shrink-0" disabled={isPending || !canSubmit}>
         Create
       </button>
     </form>

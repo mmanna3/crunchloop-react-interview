@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
+import { TODO_LIST_NAME_MAX_LENGTH } from '../../constants/textLimits'
 import { server } from '../../test/server'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { TodoLists } from './TodoLists'
@@ -143,6 +144,101 @@ describe('TodoLists', () => {
     await waitFor(() => {
       expect(updatedListId).toBe(1)
       expect(requestBody).toEqual({ name: newName })
+    })
+  })
+
+  describe('list name length limit', () => {
+    function getCreateForm() {
+      const createBtn = screen.getByRole('button', { name: 'Create' })
+      return createBtn.closest('form')!
+    }
+
+    it('shows live character count when creating a list', async () => {
+      const user = userEvent.setup()
+      renderWithProviders(<TodoLists />)
+
+      await waitFor(() => {
+        expect(screen.getByText('List 1')).toBeInTheDocument()
+      })
+
+      const form = getCreateForm()
+      expect(within(form).getByText(`0/${TODO_LIST_NAME_MAX_LENGTH}`)).toBeInTheDocument()
+
+      await user.type(
+        within(form).getByPlaceholderText('New list'),
+        'Hello',
+      )
+      expect(
+        within(form).getByText(`5/${TODO_LIST_NAME_MAX_LENGTH}`),
+      ).toBeInTheDocument()
+    })
+
+    it('disables Create and turns the counter red when name is over the limit', async () => {
+      const user = userEvent.setup()
+      renderWithProviders(<TodoLists />)
+
+      await waitFor(() => {
+        expect(screen.getByText('List 1')).toBeInTheDocument()
+      })
+
+      const form = getCreateForm()
+      const longName = 'x'.repeat(TODO_LIST_NAME_MAX_LENGTH + 1)
+      await user.type(within(form).getByPlaceholderText('New list'), longName)
+
+      const counter = within(form).getByText(
+        `${longName.length}/${TODO_LIST_NAME_MAX_LENGTH}`,
+      )
+      expect(counter).toHaveClass('text-red-600')
+      expect(within(form).getByRole('button', { name: 'Create' })).toBeDisabled()
+    })
+
+    it('does not attempt POST when Create is disabled due to length', async () => {
+      let postCalls = 0
+      server.use(
+        http.post(`${BASE_URL}/api/todolists`, async () => {
+          postCalls += 1
+          return HttpResponse.json({ id: 99, name: 'x' })
+        }),
+      )
+
+      const user = userEvent.setup()
+      renderWithProviders(<TodoLists />)
+
+      await waitFor(() => {
+        expect(screen.getByText('List 1')).toBeInTheDocument()
+      })
+
+      const form = getCreateForm()
+      await user.type(
+        within(form).getByPlaceholderText('New list'),
+        'x'.repeat(TODO_LIST_NAME_MAX_LENGTH + 1),
+      )
+
+      const create = within(form).getByRole('button', { name: 'Create' })
+      expect(create).toBeDisabled()
+      await user.click(create)
+      expect(postCalls).toBe(0)
+    })
+
+    it('disables Save in inline editor when name exceeds the limit', async () => {
+      const user = userEvent.setup()
+      renderWithProviders(<TodoLists />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('link', { name: 'List 1' })).toBeInTheDocument()
+      })
+
+      const listItem = screen.getByRole('link', { name: 'List 1' }).closest('li')!
+      await user.click(within(listItem).getByRole('button', { name: 'Edit' }))
+
+      const nameInput = within(listItem).getByRole('textbox', { name: 'List name' })
+      await user.clear(nameInput)
+      await user.type(nameInput, 'y'.repeat(TODO_LIST_NAME_MAX_LENGTH + 1))
+
+      expect(
+        within(listItem).getByText(`${TODO_LIST_NAME_MAX_LENGTH + 1}/${TODO_LIST_NAME_MAX_LENGTH}`),
+      ).toHaveClass('text-red-600')
+      expect(within(listItem).getByRole('button', { name: 'Save' })).toBeDisabled()
     })
   })
 })

@@ -22,22 +22,22 @@ export function TodoItemDisplay({
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <label className="flex min-w-0 cursor-pointer items-start gap-3 sm:flex-1">
+      <label className="flex min-w-0 cursor-pointer items-start gap-3 sm:flex-1 sm:items-center sm:pr-2">
         <input
           type="checkbox"
           checked={item.isCompleted}
           onChange={(e) => onToggle(id, e.target.checked)}
-          className="mt-1 size-[1.125rem] shrink-0 rounded-md border-zinc-300 text-accent focus:ring-orange-500/30"
+          className="size-4.5 shrink-0 rounded-md border border-zinc-300 accent-accent checked:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/30"
         />
         <span
-          className={`text-[15px] leading-snug text-zinc-900 ${
+          className={`min-w-0 wrap-break-word text-[15px] leading-snug text-zinc-900 ${
             item.isCompleted ? 'text-zinc-400 line-through' : ''
           }`}
         >
           {description}
         </span>
       </label>
-      <div className="flex shrink-0 flex-wrap gap-2 sm:pl-2">
+      <div className="flex shrink-0 flex-wrap gap-2">
         <button type="button" className="btn-secondary" onClick={() => onEdit({ id, description })}>
           Edit
         </button>

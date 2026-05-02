@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useToggleTodoItem } from './hooks/useToggleTodoItem'
 import { useDeleteTodoItem } from './hooks/useDeleteTodoItem'
 import { useUpdateTodoItem } from './hooks/useUpdateTodoItem'
+import { TODO_ITEM_DESCRIPTION_MAX_LENGTH } from '../../constants/textLimits'
 import { BulkCompleteToolbar } from './BulkCompleteToolbar'
 import { AddTodoItemForm } from './AddTodoItemForm'
 import { TodoItemDisplay } from './TodoItemDisplay'
@@ -26,6 +27,7 @@ export function TodoItems() {
 
   function handleUpdate(itemId: number) {
     if (!editingDescription.trim()) return
+    if (editingDescription.length > TODO_ITEM_DESCRIPTION_MAX_LENGTH) return
 
     updateTodoItem({ listId, itemId, description: editingDescription })
     setEditingId(null)
@@ -71,7 +73,7 @@ export function TodoItems() {
         {isLoadingList ? (
           <p className="mt-6 text-sm text-zinc-500">Loading list...</p>
         ) : (
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
+          <h1 className="mt-4 max-w-full wrap-break-word text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
             {title}
           </h1>
         )}

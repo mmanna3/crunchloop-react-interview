@@ -2,6 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { TODO_ITEM_DESCRIPTION_MAX_LENGTH } from '../../constants/textLimits'
 import { server } from '../../test/server'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { TodoItems } from './TodoItems'
@@ -135,6 +136,113 @@ describe('TodoItems', () => {
 
     await waitFor(() => {
       expect(deletedItemId).toBe(10)
+    })
+  })
+
+  describe('todo item description length limit', () => {
+    function getAddItemForm() {
+      const addBtn = screen.getByRole('button', { name: 'Add' })
+      return addBtn.closest('form')!
+    }
+
+    it('shows live character count when adding an item', async () => {
+      const user = userEvent.setup()
+      renderTodoItems(['/lists/1'])
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Item list 1/i)).toBeInTheDocument()
+      })
+
+      const form = getAddItemForm()
+      expect(
+        within(form).getByText(`0/${TODO_ITEM_DESCRIPTION_MAX_LENGTH}`),
+      ).toBeInTheDocument()
+
+      await user.type(
+        within(form).getByRole('textbox', { name: /new item description/i }),
+        'Task',
+      )
+      expect(
+        within(form).getByText(`4/${TODO_ITEM_DESCRIPTION_MAX_LENGTH}`),
+      ).toBeInTheDocument()
+    })
+
+    it('disables Add and highlights counter when description is over the limit', async () => {
+      const user = userEvent.setup()
+      renderTodoItems(['/lists/1'])
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Item list 1/i)).toBeInTheDocument()
+      })
+
+      const form = getAddItemForm()
+      const payload = 'z'.repeat(TODO_ITEM_DESCRIPTION_MAX_LENGTH + 1)
+      await user.type(
+        within(form).getByRole('textbox', { name: /new item description/i }),
+        payload,
+      )
+
+      const counter = within(form).getByText(
+        `${payload.length}/${TODO_ITEM_DESCRIPTION_MAX_LENGTH}`,
+      )
+      expect(counter).toHaveClass('text-red-600')
+      expect(within(form).getByRole('button', { name: 'Add' })).toBeDisabled()
+    })
+
+    it('does not send POST when Add is disabled due to length', async () => {
+      let postCalls = 0
+      server.use(
+        http.post(`${BASE_URL}/api/todolists/:listId/items`, async () => {
+          postCalls += 1
+          return HttpResponse.json({ id: 999, description: 'x', isCompleted: false })
+        }),
+      )
+
+      const user = userEvent.setup()
+      renderTodoItems(['/lists/1'])
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Item list 1/i)).toBeInTheDocument()
+      })
+
+      const form = getAddItemForm()
+      await user.type(
+        within(form).getByRole('textbox', { name: /new item description/i }),
+        'w'.repeat(TODO_ITEM_DESCRIPTION_MAX_LENGTH + 1),
+      )
+
+      const addBtn = within(form).getByRole('button', { name: 'Add' })
+      expect(addBtn).toBeDisabled()
+      await user.click(addBtn)
+      expect(postCalls).toBe(0)
+    })
+
+    it('disables Save in inline edit when description exceeds the limit', async () => {
+      const user = userEvent.setup()
+      renderTodoItems(['/lists/1'])
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/Item list 1/i)).toBeInTheDocument()
+      })
+
+      const itemRow = screen.getByLabelText(/Item list 1/i).closest('li')!
+      await user.click(within(itemRow).getByRole('button', { name: 'Edit' }))
+
+      const descInput = within(itemRow).getByRole('textbox', {
+        name: 'Task description',
+      })
+      await user.clear(descInput)
+      await user.type(
+        descInput,
+        'q'.repeat(TODO_ITEM_DESCRIPTION_MAX_LENGTH + 1),
+      )
+
+      expect(
+        within(itemRow).getByText(
+          `${TODO_ITEM_DESCRIPTION_MAX_LENGTH + 1}/${TODO_ITEM_DESCRIPTION_MAX_LENGTH}`,
+        ),
+      ).toHaveClass('text-red-600')
+      expect(within(itemRow).getByRole('button', { name: 'Save' })).toBeDisabled()
     })
   })
 })
